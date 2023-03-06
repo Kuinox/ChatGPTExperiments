@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using OpenAI_API;
 using OpenAI_API.ChatCompletions;
 using OpenAI_API.Models;
@@ -7,10 +7,10 @@ namespace ChatGPTExperiments
 {
     public class ConsoleService : BackgroundService
     {
-        readonly IOptions<OpenAPIConfig> _config;
+        readonly IOptions<OpenAIAPIConfig> _config;
         OpenAIAPI? _api;
 
-        public ConsoleService(IOptions<OpenAPIConfig> config)
+        public ConsoleService(IOptions<OpenAIAPIConfig> config)
         {
             _config = config;
         }

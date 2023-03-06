@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33414.496
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatGPTExperiments", "ChatGPTExperiments\ChatGPTExperiments.csproj", "{5D830094-60EE-41E3-B17F-39338BFA3BA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KuinoxSemiAGI", "ChatGPTExperiments\KuinoxSemiAGI.csproj", "{5D830094-60EE-41E3-B17F-39338BFA3BA8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenAI_API", "OpenAI-API-dotnet\OpenAI_API\OpenAI_API.csproj", "{4D9B14B4-9751-4F14-A2D0-F6ABED1E9587}"
 EndProject
