@@ -26,26 +26,23 @@ namespace ChatGPTExperiments
                 {
                     var openapiKey = hostContext.Configuration.GetSection( "OpenAPI" ).Get<OpenAIAPIConfig>().ApiKey;
                     services
-                        .Configure<DiscordSocketConfig>( hostContext.Configuration.GetSection( "DiscordConfig" ) )
-                        .Configure<DiscordHostConfiguration>( hostContext.Configuration.GetSection( "DiscordHostConfiguration" ) )
-                        .Configure<KuinoxSemiAGI.DiscordConfig>( hostContext.Configuration.GetSection( "DiscordConfig" ) )
-                        .AddSingleton((s) => new OpenAIAPI( openapiKey ) )
-                        .AddSingleton<DiscordAskChatGPT>()
+                        .Configure<DiscordHostConfiguration>( hostContext.Configuration.GetSection( "Discord" ) )
+                        .AddSingleton( ( s ) => new OpenAIAPI( openapiKey ) )
+                        .AddHttpClient()
                         .AddHostedService<InteractionHandler>()
-                        ;
+                        .AddHostedService<DiscordSummonService>()                        ;
                 } )
                 .ConfigureDiscordHost( ( context, config ) =>
                 {
 
                 } )
-                .UseInteractionService( (context, config) =>
+                .UseInteractionService( ( context, config ) =>
                 {
                     config.UseCompiledLambda = true;
                 } )
-                .UseCommandService((context, config) =>
+                .UseCommandService( ( context, config ) =>
                 {
                 } )
-                
                 .Build();
 
             await host.RunAsync();

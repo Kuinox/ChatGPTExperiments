@@ -28,7 +28,7 @@ internal class InteractionHandler : DiscordClientService
         // Process the InteractionCreated payloads to execute Interactions commands
         Client.InteractionCreated += HandleInteraction;
 
-        // Process the command execution results 
+        // Process the command execution results
         _interactionService.SlashCommandExecuted += SlashCommandExecuted;
         _interactionService.ContextCommandExecuted += ContextCommandExecuted;
         _interactionService.ComponentCommandExecuted += ComponentCommandExecuted;

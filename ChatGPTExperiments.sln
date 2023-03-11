@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KuinoxSemiAGI", "ChatGPTExp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenAI_API", "OpenAI-API-dotnet\OpenAI_API\OpenAI_API.csproj", "{4D9B14B4-9751-4F14-A2D0-F6ABED1E9587}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MLSummarizer", "MLSummarizer\MLSummarizer.csproj", "{BFDDBA7B-36DA-4D8A-9CFF-55BC76900C9F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{4D9B14B4-9751-4F14-A2D0-F6ABED1E9587}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D9B14B4-9751-4F14-A2D0-F6ABED1E9587}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D9B14B4-9751-4F14-A2D0-F6ABED1E9587}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFDDBA7B-36DA-4D8A-9CFF-55BC76900C9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFDDBA7B-36DA-4D8A-9CFF-55BC76900C9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFDDBA7B-36DA-4D8A-9CFF-55BC76900C9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFDDBA7B-36DA-4D8A-9CFF-55BC76900C9F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="merges.txt" />
+    <None Remove="model.onnx" />
+    <None Remove="vocab.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="merges.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="model.onnx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="vocab.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ML" Version="2.0.1" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime.Gpu" Version="1.14.1" />
+    <PackageReference Include="Microsoft.ML.OnnxTransformer" Version="2.0.1" />
+    <PackageReference Include="Microsoft.ML.Tokenizers" Version="0.20.1" />
+  </ItemGroup>
+
+</Project>
