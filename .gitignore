@@ -199,3 +199,4 @@ Builder/Tools/
 
 CodeCakeBuilder/UnitTestsDone.*.txt
 $StObjGen/
+/ChatGPTExperiments/appsettings.json
