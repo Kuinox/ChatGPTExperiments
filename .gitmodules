@@ -1,3 +1,4 @@
-[submodule "OpenAI-API-dotnet"]
-	path = OpenAI-API-dotnet
-	url = https://github.com/OkGoDoIt/OpenAI-API-dotnet
+[submodule "CatBox.NET"]
+	path = CatBox.NET
+	url = C:/dev/ChatGPTExperiments/CatBox.NET
+	branch = main
