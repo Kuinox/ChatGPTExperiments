@@ -1,12 +1,6 @@
-using AI.Dev.OpenAI.GPT;
 using Discord;
 using Discord.WebSocket;
-using OpenAI_API.ChatCompletions;
-using OpenAI_API;
 using System.Text.Json;
-using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
-using Discord.Commands;
 using System.Diagnostics;
 using System.Text;
 
@@ -15,44 +9,22 @@ namespace KuinoxSemiAGI
     public class DiscordSummonService : IHostedService
     {
         readonly DiscordSocketClient _client;
-        readonly OpenAIAPI _openAIAPI;
 
-        public DiscordSummonService( DiscordSocketClient client, OpenAIAPI openAIAPI )
+        public DiscordSummonService( DiscordSocketClient client )
         {
             _client = client;
-            _openAIAPI = openAIAPI;
         }
 
         public Task StartAsync( CancellationToken cancellationToken )
         {
             _client.MessageReceived += HandleMessageAsync;
-            _client.ReactionAdded += HandleReactionAsync; ;
-            _client.MessageUpdated += MessageUpdated;
             return Task.CompletedTask;
-        }
-
-        async Task MessageUpdated( Cacheable<IMessage, ulong> arg1, SocketMessage arg2, ISocketMessageChannel arg3 )
-        {
-            //return HandleMessageAsync( arg2 );
         }
 
         public Task StopAsync( CancellationToken cancellationToken )
         {
             _client.MessageReceived -= HandleMessageAsync;
-            _client.ReactionAdded -= HandleReactionAsync;
-            _client.MessageUpdated -= MessageUpdated;
             return Task.CompletedTask;
-        }
-
-        async Task HandleReactionAsync(
-            Cacheable<IUserMessage, ulong> arg1,
-            Cacheable<IMessageChannel, ulong> arg2,
-            SocketReaction reaction )
-        {
-            //if( reaction.UserId == _client.CurrentUser.Id ) return;//Ignore self reaction.
-            //if( reaction.Emote.Name != "♻️" ) return;
-            //var msg = await reaction.Channel.GetMessageAsync( reaction.MessageId );
-            //if( msg.Author.Id != _client.CurrentUser.Id ) return;
         }
 
         async Task HandleMessageAsync( SocketMessage message )
@@ -62,11 +34,11 @@ namespace KuinoxSemiAGI
                 Console.WriteLine( "Ignored" + message );
                 return;
             }
-            //Add a chance that it stop responding to itself.
             if( userMessage.Author.Id == _client.CurrentUser.Id ) return;
             if( message.MentionedUsers.Any( s => s.Id == _client.CurrentUser.Id ) )
             {
-                RespondAsync( userMessage );
+                _ = RespondAsync( userMessage ); // We fire and forget tasks because this blocks responding to someone else.
+                // Ugly hack, but it works.
                 return;
             }
 
@@ -75,7 +47,7 @@ namespace KuinoxSemiAGI
                 var replyTo = await message.Channel.GetMessageAsync( message.Reference.MessageId.Value );
                 if( replyTo.Author.Id == _client.CurrentUser.Id )
                 {
-                    RespondAsync( userMessage );
+                    _= RespondAsync( userMessage );
                     return;
                 }
             }

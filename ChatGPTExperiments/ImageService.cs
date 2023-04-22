@@ -1,5 +1,7 @@
+using CatBox.NET;
 using Discord;
 using Discord.Interactions;
+using Microsoft.Extensions.Options;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 using Image = SixLabors.ImageSharp.Image;
@@ -9,9 +11,14 @@ namespace KuinoxSemiAGI;
 public class ImageService : InteractionModuleBase<SocketInteractionContext>
 {
     readonly HttpClient _httpClient;
-    public ImageService( IHttpClientFactory httpClientFactory )
+    readonly ICatBoxClient _catBox;
+    readonly IOptions<ImageServiceConfig> _config;
+
+    public ImageService( IHttpClientFactory httpClientFactory, ICatBoxClient catBox, IOptions<ImageServiceConfig> options )
     {
         _httpClient = httpClientFactory.CreateClient( "ImageService" );
+        _catBox = catBox;
+        _config = options;
     }
 
     public enum RotateOption
@@ -105,22 +112,23 @@ public class ImageService : InteractionModuleBase<SocketInteractionContext>
         return _lastClientId;
     }
 
-    class ResponseJson
+    class ImgurResponseJson
     {
         public class MediaJson
         {
             public string Url { get; set; }
         }
+        public string title;
         public MediaJson[] Media { get; set; }
     }
 
-    async Task<IEnumerable<string>> GetAlbumLinks( string albumUrl )
+    async Task<ImgurResponseJson> GetAlbumLinks( string albumUrl )
     {
         var albumId = new Uri( albumUrl ).Segments[2];
         var clientId = await GetImgurClientId();
         var response = await _httpClient.GetAsync( $"https://api.imgur.com/post/v1/albums/{albumId}?client_id={clientId}&include=media" );
-        var parsed = await response.Content.ReadFromJsonAsync<ResponseJson>();
-        return parsed.Media.Select( s => s.Url );
+        var parsed = await response.Content.ReadFromJsonAsync<ImgurResponseJson>();
+        return parsed;
     }
 
     static bool IsAlbumLink( string url )
@@ -128,6 +136,22 @@ public class ImageService : InteractionModuleBase<SocketInteractionContext>
         if( !Uri.TryCreate( url, UriKind.Absolute, out var uri ) ) return false;
         if( uri.Segments.Length < 3 ) return false;
         return uri.Segments[1] == "a";
+    }
+
+    [SlashCommand( "catbox_upload", "Upload an image to catbox.moe!" )]
+    public async Task CatboxUpload( IAttachment attachment )
+    {
+        await CatboxUpload( attachment.Url );
+    }
+
+    [SlashCommand( "catbox_upload_url", "Upload an image to catbox.moe!" )]
+    public async Task CatboxUpload( string url )
+    {
+        var imgUrl = await _catBox.UploadMultipleUrls( new UrlUploadRequest()
+        {
+            Files = new[] { new Uri( url ) }
+        } ).SingleAsync();
+        await RespondAsync( imgUrl );
     }
 
     [SlashCommand( "imgur_backup", "Backup all imgur images to discord." )]
@@ -148,28 +172,54 @@ public class ImageService : InteractionModuleBase<SocketInteractionContext>
                 Interlocked.Increment( ref i ); // Messages counting hack.
                 return s;
             } )
-            .SelectMany( s => s.Content.Split( "\n" ).Concat( s.Embeds.Select( s => s.Url ) ).ToAsyncEnumerable() )
-            .Distinct()
-            .Where( s => Uri.TryCreate( s, UriKind.Absolute, out var uri ) && (uri.Scheme == "http" || uri.Scheme == "https") )
+            .OfType<IUserMessage>()
+            .SelectMany( s => s.Content.Split( "\n" ).Concat( s.Embeds.Select( s => s.Url ) )
+                .Select( x => (msg: s, link: x) )
+                .ToAsyncEnumerable() )
+            .Where( s => Uri.TryCreate( s.link, UriKind.Absolute, out var uri ) && (uri.Scheme == "http" || uri.Scheme == "https") )
             .Where( s =>
             {
-                var host = new Uri( s ).Host;
+                var host = new Uri( s.link ).Host;
                 return host == "i.imgur.com" || host == "imgur.com";
             } )
-            .Distinct();
+            .Distinct( s => Path.GetFileNameWithoutExtension( new Uri( s.link ).Segments.Last() ) );
         int albumCount = 0;
         int albumImageCount = 0;
         int imageCount = 0;
-        await foreach( var link in links )
+        await foreach( var (msg, link) in links )
         {
             if( IsAlbumLink( link ) )
             {
+                var album = (await GetAlbumLinks( link ));
                 albumCount += 1;
-                albumImageCount += (await GetAlbumLinks( link )).Count();
+                albumImageCount += album.Media.Length;
+                var catboxLink = await _catBox.CreateAlbum( new CreateAlbumRequest()
+                {
+                    Description = $"Migrated from imgur album {link}",
+                    Files = album.Media.Select( s => s.Url ),
+                    Title = album.title
+                } );
+
+                await msg.ReplyAsync( Uri.TryCreate( catboxLink, UriKind.Absolute, out _ ) ? $"Imgur album backed up to {catboxLink}." : catboxLink );
             }
             else
             {
                 imageCount += 1;
+                var catboxLink = await _catBox.UploadMultipleUrls( new UrlUploadRequest()
+                {
+                    // we add .png because 1. imgur return the image but a webpage if there is not file extension.
+                    // and because imgur doesn't care of the actual file extension.
+                    Files = new[] { new Uri( link + ".png" ) }
+                } ).SingleAsync();
+                if( Uri.TryCreate( catboxLink, UriKind.Absolute, out _ ) )
+                {
+                    var builder = new EmbedBuilder().WithImageUrl( catboxLink );
+                    await msg.ReplyAsync( embed: builder.Build() );
+                }
+                else
+                {
+                    await msg.ReplyAsync( catboxLink, allowedMentions: new AllowedMentions( AllowedMentionTypes.None ) );
+                }
             }
         }
         var str = $"Processed {i} messages.\n{albumCount} albums which contain a sum of {albumImageCount} images.\n{imageCount} images link.";
@@ -181,44 +231,5 @@ public class ImageService : InteractionModuleBase<SocketInteractionContext>
         {
             await Context.Channel.SendMessageAsync( str );
         }
-    }
-
-
-    [SlashCommand( "imagehosts", "List all image hostnames in the current channel." )]
-    public async Task ListImageHosts()
-    {
-        await DeferAsync();
-        // search for messages containing images in the current channel
-        var messages = Context.Channel.GetMessagesAsync( int.MaxValue, CacheMode.AllowDownload, new RequestOptions()
-        {
-            RetryMode = RetryMode.RetryRatelimit
-        } ).Flatten();
-
-        int i = 0;
-        IMessage first = null;
-        IMessage last = null;
-        // count the images per hostname
-        var hostCounts = await messages
-            .Select( s =>
-            {
-                Interlocked.Increment( ref i ); // Messages counting hack.
-                if( first is null || s.Timestamp < first.Timestamp )
-                {
-                    first = s;
-                }
-                if( last is null || s.Timestamp > last.Timestamp )
-                {
-                    last = s;
-                }
-                return s;
-            } )
-            .SelectMany( s => s.Content.Split( "\n" ).Concat( s.Embeds.Select( s => s.Url ) ).ToAsyncEnumerable() )
-            .Distinct()
-            .Where( s => Uri.TryCreate( s, UriKind.Absolute, out var uri ) && (uri.Scheme == "http" || uri.Scheme == "https") )
-            .GroupBy( s => new Uri( s ).Host )
-            .ToDictionaryAwaitAsync( g => new ValueTask<string>( g.Key ), async g => await g.CountAsync() );
-        var text = $"Earliest message scanned: {first.GetJumpUrl()}\n Latest message scanned: {last.GetJumpUrl()}\n {i} messages scanned.\n" + string.Join( "\n", hostCounts.Select( s => $"{s.Key}: {s.Value} image{(s.Value > 1 ? "s" : "")}." ) );
-        Console.WriteLine( text );
-        await FollowupAsync( text );
     }
 }

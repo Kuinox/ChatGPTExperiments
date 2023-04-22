@@ -11,5 +11,8 @@
 		<PackageReference Include="Discord.Net" Version="3.10.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
   </ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\CatBox.NET\src\CatBox.NET\CatBox.NET.csproj" />
+	</ItemGroup>
 	
 </Project>

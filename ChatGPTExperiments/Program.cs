@@ -1,10 +1,10 @@
+using CatBox.NET;
 using Discord;
 using Discord.Addons.Hosting;
 using Discord.WebSocket;
 using KuinoxSemiAGI;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
-using OpenAI_API;
 using System.Xml.Xsl;
 
 namespace ChatGPTExperiments
@@ -24,13 +24,13 @@ namespace ChatGPTExperiments
                 } )
                 .ConfigureServices( ( hostContext, services ) =>
                 {
-                    var openapiKey = hostContext.Configuration.GetSection( "OpenAPI" ).Get<OpenAIAPIConfig>().ApiKey;
                     services
                         .Configure<DiscordHostConfiguration>( hostContext.Configuration.GetSection( "Discord" ) )
-                        .AddSingleton( ( s ) => new OpenAIAPI( openapiKey ) )
                         .AddHttpClient()
                         .AddHostedService<InteractionHandler>()
-                        .AddHostedService<DiscordSummonService>()                        ;
+                        .AddHostedService<DiscordSummonService>()
+                        .AddCatBoxServices( f => f.CatBoxUrl = new Uri( "https://catbox.moe/user/api.php" ) )
+                        ;
                 } )
                 .ConfigureDiscordHost( ( context, config ) =>
                 {

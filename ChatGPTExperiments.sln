@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KuinoxSemiAGI", "ChatGPTExp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MLSummarizer", "MLSummarizer\MLSummarizer.csproj", "{BFDDBA7B-36DA-4D8A-9CFF-55BC76900C9F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatBox.NET", "CatBox.NET\src\CatBox.NET\CatBox.NET.csproj", "{88006A89-FC47-406D-A680-3464B8CAD882}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{BFDDBA7B-36DA-4D8A-9CFF-55BC76900C9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFDDBA7B-36DA-4D8A-9CFF-55BC76900C9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFDDBA7B-36DA-4D8A-9CFF-55BC76900C9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88006A89-FC47-406D-A680-3464B8CAD882}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88006A89-FC47-406D-A680-3464B8CAD882}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88006A89-FC47-406D-A680-3464B8CAD882}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88006A89-FC47-406D-A680-3464B8CAD882}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
