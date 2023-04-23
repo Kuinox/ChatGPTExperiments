@@ -38,7 +38,7 @@ namespace KuinoxSemiAGI
             return _lastClientId;
         }
 
-        public static async Task<ImgurResponseJson> GetAlbumData( HttpClient httpClient, string albumUrl )
+        public static async Task<ImgurResponseJson?> GetAlbumData( HttpClient httpClient, string albumUrl )
         {
             var albumId = GetImgurId( albumUrl );
             var clientId = await GetImgurClientId( httpClient );
@@ -47,7 +47,7 @@ namespace KuinoxSemiAGI
             var parsed = await response.Content.ReadFromJsonAsync<ImgurResponseJson>();
             return parsed!;
         }
-        public static async Task<ImgurResponseJson> GetPostData( HttpClient httpClient, string imgurLink )
+        public static async Task<ImgurResponseJson?> GetPostData( HttpClient httpClient, string imgurLink )
         {
             var albumId = GetImgurId( imgurLink );
             var clientId = await GetImgurClientId(httpClient);

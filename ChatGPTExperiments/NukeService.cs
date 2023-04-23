@@ -18,7 +18,7 @@ namespace KuinoxSemiAGI
                 .Skip(1)
                 .ToArrayAsync();
 
-            await (Context.Channel as ITextChannel).DeleteMessagesAsync( msgs );
+            await (Context.Channel as ITextChannel)!.DeleteMessagesAsync( msgs );
             var builder = new EmbedBuilder()
              .WithTitle( $"Nuked {count} messages" )
              .WithImageUrl( "https://media.tenor.com/jkRrt2SrlMkAAAAC/pepe-nuke.gif" )
