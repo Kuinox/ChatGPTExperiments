@@ -3,6 +3,7 @@ using Discord;
 using Discord.Addons.Hosting;
 using Discord.WebSocket;
 using KuinoxSemiAGI;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using System.Xml.Xsl;
@@ -26,6 +27,7 @@ namespace ChatGPTExperiments
                 {
                     services
                         .Configure<DiscordHostConfiguration>( hostContext.Configuration.GetSection( "Discord" ) )
+                        .Configure<ImageServiceConfig>(hostContext.Configuration.GetSection("ImageService"))
                         .AddHttpClient()
                         .AddHostedService<InteractionHandler>()
                         .AddHostedService<DiscordSummonService>()

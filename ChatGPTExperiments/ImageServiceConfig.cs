@@ -1,6 +1,6 @@
-﻿namespace KuinoxSemiAGI;
+namespace KuinoxSemiAGI;
 
 public class ImageServiceConfig
 {
-    public string CatboxUserHash;
+    public string CatboxUserHash { get; set; }
 }
