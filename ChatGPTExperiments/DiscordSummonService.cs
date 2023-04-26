@@ -91,7 +91,7 @@ namespace KuinoxSemiAGI
                 {
                     Description = $"Migrated from imgur album {link}",
                     Files = imageLinks!,
-                    Title = album.title,
+                    Title = album.title!,
                     UserHash = _config.Value.CatboxUserHash
                 } );
                 await msg.ReplyAsync( Uri.TryCreate( catboxLink, UriKind.Absolute, out _ ) ? $"Imgur is Dead!\nI backed up this album to {catboxLink}." : $"Catbox Upload Error {catboxLink}.", allowedMentions: new AllowedMentions( AllowedMentionTypes.None ) );

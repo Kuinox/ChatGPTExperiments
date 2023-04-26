@@ -180,11 +180,11 @@ public partial class ImageService : InteractionModuleBase<SocketInteractionConte
                 var catboxLink = await _catBox.CreateAlbum( new CreateAlbumRequest()
                 {
                     Description = $"Migrated from imgur album {link}",
-                    Files = imageLinks,
-                    Title = album.title,
+                    Files = imageLinks!,
+                    Title = album.title!,
                     UserHash = _config.Value.CatboxUserHash
                 } );
-                if( await Is502( catboxLink ) ) return;
+                if( await Is502( catboxLink! ) ) return;
                 if( !Uri.TryCreate( catboxLink, UriKind.Absolute, out _ ) )
                 {
                     failCount += 1;
@@ -208,7 +208,7 @@ public partial class ImageService : InteractionModuleBase<SocketInteractionConte
                     Files = new[] { new Uri( url ) },
                     UserHash = _config.Value.CatboxUserHash
                 } ).SingleAsync();
-                if( await Is502( catboxLink ) ) return;
+                if( await Is502( catboxLink! ) ) return;
                 if( !Uri.TryCreate( catboxLink, UriKind.Absolute, out _ ) )
                 {
                     failCount += 1;
