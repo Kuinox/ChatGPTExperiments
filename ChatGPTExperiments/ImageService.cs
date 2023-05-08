@@ -203,8 +203,6 @@ public partial class ImageService : InteractionModuleBase<SocketInteractionConte
                 string url = data!.media!.Single().url!;
                 var catboxLink = await _catBox.UploadMultipleUrls( new UrlUploadRequest()
                 {
-                    // we add .png because 1. imgur return the image but a webpage if there is not file extension.
-                    // and because imgur doesn't care of the actual file extension.
                     Files = new[] { new Uri( url ) },
                     UserHash = _config.Value.CatboxUserHash
                 } ).SingleAsync();
